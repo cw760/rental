@@ -33,8 +33,12 @@ public class UserController {
     User user = null;
     if (id == null) {
       user = new User();
+      mav.addObject("h1", "注册新用户");
+      mav.addObject("button", "注 册");
     } else {
       user = userDao.find(id);
+      mav.addObject("h1", "用户信息修改");
+      mav.addObject("button", "修 改");
     }
 
     mav.addObject("user", user);
@@ -70,11 +74,22 @@ public class UserController {
   @RequestMapping(method = RequestMethod.POST, value = "edit")
   public String saveUser(@ModelAttribute User user) {
     logger.debug("Received postback on User " + user);
+
+    if (StringUtils.isEmpty(user.getId())) {
+      if (StringUtils.isEmpty(user.getNewPwd())) {
+        return "redirect:login";
+      }
+    } else {
+      if (!userDao.find(user.getId()).getPwd().equals(Encrypt.encrypt(user.getNewPwd()))) {
+        return "redirect:login";
+      }
+    }
     user.setStatus("0");// 未激活
     user.setType("2");// 普通用户
-    user.setPwd(Encrypt.encrypt(user.getPwd()));
+    user.setPwd(Encrypt.encrypt(user.getNewPwd()));
     userDao.save(user);
     return "redirect:list";
+
   }
 
   @RequestMapping(method = RequestMethod.POST, value = "login")
