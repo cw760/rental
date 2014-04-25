@@ -9,6 +9,7 @@
 
   <modules>
     <module>rental-server</module>
+    <module>android</module>
   </modules>
   
 </project>
