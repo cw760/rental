@@ -2,6 +2,7 @@ package org.incito.cw.rental.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -36,11 +37,21 @@ public class User extends BaseVO {
    */
   private String nickName;
 
+  /**
+   * 新密码
+   */
+  private String newPwd;
+
   @NotEmpty(message = "用户账号不能为空")
   @Length(max = 32, message = "用户账号不能超过32个字符")
   @Column(unique = true)
   public String getAccount() {
     return account;
+  }
+
+  @Transient
+  public String getNewPwd() {
+    return newPwd;
   }
 
   public String getNickName() {
@@ -63,6 +74,10 @@ public class User extends BaseVO {
 
   public void setAccount(String account) {
     this.account = account;
+  }
+
+  public void setNewPwd(String newPwd) {
+    this.newPwd = newPwd;
   }
 
   public void setNickName(String nickName) {
