@@ -8,7 +8,6 @@ import android.content.DialogInterface.OnKeyListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.Window;
 import android.widget.Toast;
 
 import com.rp.rentalcar.http.HttpRestRequest;
@@ -21,8 +20,36 @@ import de.greenrobot.event.EventBus;
 
 public abstract class TemplateActivity extends Activity implements IEvent {
 	private ProgressDialog pd = null;
-	private EventBus eventBus = new EventBus();
 
+	protected static final EventBus sEventBus;
+	static {
+		sEventBus = EventBus.getDefault();
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		sEventBus.register(this);
+		// requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		sEventBus.unregister(this);
+	}
+
+	/**
+	 * 请求网络接口调用的方法
+	 * 
+	 * @param context
+	 * @param type
+	 * @param resourcePath
+	 * @param obj
+	 * @param responseClass
+	 * @param httpMethond
+	 */
 	protected final <T> void sendEvent(Context context, int type,
 			String resourcePath, T obj, Class<?> responseClass,
 			HttpMethond httpMethond) {
@@ -54,50 +81,6 @@ public abstract class TemplateActivity extends Activity implements IEvent {
 		});
 	}
 
-	public void showToast(String message) {
-		Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-	}
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		eventBus.register(this);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-
-	}
-
-	@Override
-	protected void onRestart() {
-		super.onRestart();
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-
-	}
-
 	private class RequestAsyncTask extends
 			AsyncTask<RequestParams, Integer, Response> {
 
@@ -116,8 +99,7 @@ public abstract class TemplateActivity extends Activity implements IEvent {
 						Toast.LENGTH_LONG).show();
 				return;
 			} else {
-				eventBus.post(result);
-				// TemplateActivity.this.handleEvent(result);
+				sEventBus.post(result);
 			}
 
 		}
