@@ -1,7 +1,9 @@
 package org.incito.cw.rental.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.incito.cw.rental.base.Result;
 import org.incito.cw.rental.controller.UserController;
 import org.incito.cw.rental.dao.UserDao;
 import org.incito.cw.rental.model.User;
@@ -34,20 +36,22 @@ public class UserService {
 
   @RequestMapping(method = RequestMethod.POST, value = "login")
   @ResponseBody
-  public User valid(@RequestBody User user) throws Exception {
+  public Result<User> valid(@RequestBody User user) throws Exception {
     logger.debug("login " + user);
     if (StringUtils.isEmpty(user.getAccount())) {
-      throw new Exception("账户不能为空");
+      return new Result<User>(1, "账户不能为空");
     }
     if (StringUtils.isEmpty(user.getPwd())) {
-      throw new Exception("密码不能为空");
+      return new Result<User>(1, "密码不能为空");
     }
     User findByAccount = userDao.findByAccount(user.getAccount());
     if (Encrypt.encrypt(user.getPwd()).equals(findByAccount.getPwd())) {
-      return findByAccount;
+      ArrayList<User> list = new ArrayList<User>();
+      list.add(findByAccount);
+      return new Result<User>(0, "用户登录成功", list);
     } else {
-      throw new Exception("用户名密码不正确");
+      // throw new Exception("用户名密码不正确");
+      return new Result<User>(1, "用户名密码不正确");
     }
   }
-
 }
