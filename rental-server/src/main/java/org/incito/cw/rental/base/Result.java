@@ -18,7 +18,7 @@ public class Result<T> {
   public Result(Integer status, String message) {
     this.status = status;
     this.message = message;
-    this.items = new ArrayList<>();
+    this.items = new ArrayList<T>();
   }
 
   public Result(Integer status, String message, List<T> items) {
